@@ -4,13 +4,15 @@ This project combines React Router (Remix) with Hono.
 
 ## Technology Stack
 
-- Frontend built with React Router (Remix)
-  - Styling implemented using HeroUI (NextUI) and Tailwind CSS
-- API server (RPC) using Hono
-  - API server testing with Vitest
-  - Validation using Valibot
-  - Automatic API specification generation with OpenAPI
-- Deployment on Node
+- Frontend built with [React Router (Remix)](https://reactrouter.com/)
+  - Styling implemented using [HeroUI (NextUI)](https://www.heroui.com/) and Tailwind CSS
+- API server ([RPC](https://hono.dev/docs/guides/rpc)) using [Hono](https://hono.dev)
+  - API server testing with [Vitest](https://vitest.dev/)
+  - Validation using [Valibot](https://valibot.dev/)
+  - Automatic API specification generation with [hono-openapi](https://hono.dev/examples/hono-openapi)
+- Integration of Hono and React Router using [hono-remix](https://github.com/sergiodxa/remix-hono)
+- Deployment on Node environment
+- Dependency injection for API and Remix using [Hono Context](https://hono.dev/docs/api/context#var)
 
 ## Commands
 

@@ -4,13 +4,15 @@ React Router(Remix) と Hono を組み合わせたプロジェクトです。
 
 ## 技術スタック
 
-- React Router (Remix) によるフロントエンドの構築
-  - HeroUI (NextUI) と Tailwind CSS によるスタイリングの導入
-- Hono による API サーバー (RPC)
-  - Vitest による API サーバーのテスト
-  - Valibot でのバリデーション
-  - OpenAPI による API 仕様の自動生成
-- Node でのデプロイ
+- [React Router (Remix)](https://reactrouter.com/) によるフロントエンドの構築
+  - [HeroUI (NextUI)](https://www.heroui.com/) と Tailwind CSS によるスタイリングの導入
+- [Hono](https://hono.dev) による API サーバー ([RPC](https://hono.dev/docs/guides/rpc))
+  - [Vitest](https://vitest.dev/) による API サーバーのテスト
+  - [Valibot](https://valibot.dev/) でのバリデーション
+  - [hono-openapi](https://hono.dev/examples/hono-openapi) による API 仕様の自動生成
+- [hono-remix](https://github.com/sergiodxa/remix-hono) での Hono と React Router の統合
+- Node 環境でのデプロイ
+- [Hono Context](https://hono.dev/docs/api/context#var) での API、Remix への依存注入
 
 ## コマンド
 
