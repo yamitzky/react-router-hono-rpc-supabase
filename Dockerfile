@@ -17,19 +17,14 @@ RUN pnpm run build
 FROM deps AS prod-deps
 RUN pnpm prune --prod && pnpm install --frozen-lockfile --offline --prod
 
-FROM base AS runner
+FROM gcr.io/distroless/nodejs20-debian12:nonroot
 ENV NODE_ENV=production
 ENV PORT=3000
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 remixjs
 
 COPY --from=builder /app/build ./build
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY package.json ./
 
-USER remixjs
-
 EXPOSE 3000
 
-CMD ["node", "build/index.js"]
+CMD ["build/index.js"]
