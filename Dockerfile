@@ -1,22 +1,35 @@
-FROM node:20-alpine AS development-dependencies-env
-COPY . /app
+FROM node:20-slim AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 WORKDIR /app
-RUN npm ci
 
-FROM node:20-alpine AS production-dependencies-env
-COPY ./package.json package-lock.json /app/
-WORKDIR /app
-RUN npm ci --omit=dev
+FROM base AS deps
+COPY pnpm-lock.yaml ./
+RUN pnpm fetch
+COPY package.json  ./
+RUN pnpm install --frozen-lockfile --offline
 
-FROM node:20-alpine AS build-env
-COPY . /app/
-COPY --from=development-dependencies-env /app/node_modules /app/node_modules
-WORKDIR /app
-RUN npm run build
+FROM deps AS builder
+COPY . .
+RUN pnpm run build
 
-FROM node:20-alpine
-COPY ./package.json package-lock.json /app/
-COPY --from=production-dependencies-env /app/node_modules /app/node_modules
-COPY --from=build-env /app/build /app/build
-WORKDIR /app
-CMD ["npm", "run", "start"]
+FROM deps AS prod-deps
+RUN pnpm prune --prod && pnpm install --frozen-lockfile --offline --prod
+
+FROM base AS runner
+ENV NODE_ENV=production
+ENV PORT=3000
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 remixjs
+
+COPY --from=builder /app/build ./build
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY package.json ./
+
+USER remixjs
+
+EXPOSE 3000
+
+CMD ["node", "build/index.js"]
