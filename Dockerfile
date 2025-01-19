@@ -1,10 +1,10 @@
 FROM node:20-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
 WORKDIR /app
 
 FROM base AS deps
+RUN corepack enable
 COPY pnpm-lock.yaml ./
 RUN pnpm fetch
 COPY package.json  ./

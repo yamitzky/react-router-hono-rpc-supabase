@@ -1,10 +1,13 @@
+import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
 import { apiReference } from '@scalar/hono-api-reference'
 import { Hono } from 'hono'
 import { openAPISpecs } from 'hono-openapi'
+import process from 'node:process'
 import type { AppLoadContext, RequestHandler } from 'react-router'
 import { createRequestHandler } from 'react-router'
 import { reactRouter } from 'remix-hono/handler'
+import { fileURLToPath } from 'url'
 import apiRoutes from './app/api'
 import { InMemoryArticleRepository } from './app/infrastructure/memory/inMemoryArticleRepository'
 import { createRepositoryMiddleware } from './app/middleware/repositoryMiddleware'
@@ -69,15 +72,12 @@ if (import.meta.env.DEV) {
   )
 }
 
-if (import.meta.env.PROD) {
-  app.use('/assets/*', serveStatic({ root: './build/client' }))
-  app.use('/favicon.ico', serveStatic({ root: './build/client' }))
-}
+app.use('/assets/*', serveStatic({ root: './build/client' }))
+app.use('/favicon.ico', serveStatic({ root: './build/client' }))
 
 app.use(async (c, next) => {
-  if (process.env.NODE_ENV !== 'development' || import.meta.env.PROD) {
-    // @ts-expect-error it's not typed
-    const serverBuild = await import('./build/server')
+  if (import.meta.env.PROD) {
+    const serverBuild = await import(fileURLToPath(new URL('./server/index.js', import.meta.url)))
     return reactRouter({
       build: serverBuild,
       mode: 'production',
@@ -101,5 +101,22 @@ app.use(async (c, next) => {
     return handler(c.req.raw, remixContext)
   }
 })
+
+if (import.meta.env.PROD) {
+  const server = serve(
+    {
+      fetch: app.fetch,
+      port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
+    },
+    (info) => {
+      console.log(`Listening on http://localhost:${info.port}`)
+    },
+  )
+  process.on('SIGINT', () => {
+    server.close(() => {
+      console.log('[SIGINT] Shutting down...')
+    })
+  })
+}
 
 export default app
