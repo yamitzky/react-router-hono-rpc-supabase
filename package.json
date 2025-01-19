@@ -6,7 +6,8 @@
     "build": "react-router build && vite build --mode hono",
     "dev": "react-router dev",
     "start": "node ./build/index.js",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc",
+    "test": "vitest"
   },
   "dependencies": {
     "@heroui/button": "^2.2.10",
@@ -41,6 +42,7 @@
     "tailwindcss": "^3.4.16",
     "typescript": "^5.7.2",
     "vite": "^5.4.11",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.0.2"
   }
 }
