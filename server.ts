@@ -1,5 +1,7 @@
 import { serveStatic } from '@hono/node-server/serve-static'
+import { apiReference } from '@scalar/hono-api-reference'
 import { Hono } from 'hono'
+import { openAPISpecs } from 'hono-openapi'
 import type { AppLoadContext, RequestHandler } from 'react-router'
 import { createRequestHandler } from 'react-router'
 import { reactRouter } from 'remix-hono/handler'
@@ -15,6 +17,26 @@ let handler: RequestHandler | undefined
 
 app.route('/api', apiRoutes)
 app.get('/hono', (c) => c.text('Hono, ' + c.env.MY_VAR))
+
+if (import.meta.env.DEV) {
+  app.get(
+    '/openapi',
+    openAPISpecs(apiRoutes, {
+      documentation: {
+        info: { title: 'API', version: '1.0.0', description: 'API' },
+        servers: [{ url: 'http://localhost:5173/api', description: 'Local Server' }],
+      },
+    }),
+  )
+
+  app.get(
+    '/docs',
+    apiReference({
+      theme: 'saturn',
+      spec: { url: '/openapi' },
+    }),
+  )
+}
 
 if (import.meta.env.PROD) {
   app.use('/assets/*', serveStatic({ root: './build/client' }))
