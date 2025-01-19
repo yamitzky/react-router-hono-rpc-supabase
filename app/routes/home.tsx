@@ -1,9 +1,11 @@
+import { Button } from '@heroui/button'
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '@heroui/table'
 import { hc } from 'hono/client'
 import { useCallback, useState } from 'react'
 import type { AppType } from '../../api'
 import type { Route } from './+types/home'
 
-export function meta({}: Route.MetaArgs) {
+export function meta(_args: Route.MetaArgs) {
   return [{ title: 'New React Router App' }, { name: 'description', content: 'Welcome to React Router!' }]
 }
 
@@ -20,13 +22,24 @@ export default function Home() {
     }
   }, [])
   return (
-    <div>
-      <button onClick={handleClick}>click</button>
-      <ul>
-        {articles.map((article) => (
-          <li key={article.id}>title: {article.title}</li>
-        ))}
-      </ul>
+    <div className="p-4">
+      <div className="mb-4">
+        <Button onPress={handleClick}>記事を取得</Button>
+      </div>
+      <Table aria-label="記事一覧">
+        <TableHeader>
+          <TableColumn>ID</TableColumn>
+          <TableColumn>タイトル</TableColumn>
+        </TableHeader>
+        <TableBody>
+          {articles.map((article) => (
+            <TableRow key={article.id}>
+              <TableCell>{article.id}</TableCell>
+              <TableCell>{article.title}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   )
 }

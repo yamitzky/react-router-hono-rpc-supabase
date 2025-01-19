@@ -4,9 +4,11 @@ import { describeRoute } from 'hono-openapi'
 import { resolver, validator as vValidator } from 'hono-openapi/valibot'
 import * as v from 'valibot'
 
-const querySchema = v.object({
-  title: v.optional(v.string()),
-})
+const querySchema = v.optional(
+  v.object({
+    title: v.optional(v.string()),
+  }),
+)
 
 const articleSchema = v.object({
   id: v.string(),
@@ -41,7 +43,7 @@ export const articleRoutes = new Hono().get(
       'The Art of Debugging: A Love Story',
     ]
     let articles = titles.map((title) => ({ id: crypto.randomUUID(), title }))
-    const queryTitle = c.req.valid('query').title
+    const queryTitle = c.req.valid('query')?.title
     if (queryTitle) {
       articles = articles.filter((article) => article.title.toLowerCase().includes(queryTitle.toLowerCase()))
     }

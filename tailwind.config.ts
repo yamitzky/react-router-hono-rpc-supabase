@@ -1,7 +1,11 @@
+import {heroui} from '@heroui/theme';
 import type { Config } from "tailwindcss";
 
 export default {
-  content: ["./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}"],
+  content: [
+    "./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}",
+    "./node_modules/@heroui/theme/dist/components/(button|table|ripple|spinner|checkbox|form|spacer).js"
+  ],
   theme: {
     extend: {
       fontFamily: {
@@ -18,5 +22,6 @@ export default {
       },
     },
   },
-  plugins: [],
+  darkMode: "class",
+  plugins: [heroui()],
 } satisfies Config;
