@@ -1,17 +1,25 @@
 import { Button } from '@heroui/button'
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '@heroui/table'
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/table'
+import type { ContextVariableMap } from 'hono'
 import { hc } from 'hono/client'
 import { useCallback, useState } from 'react'
-import type { AppType } from '../../api'
+import { type LoaderFunctionArgs, useLoaderData } from 'react-router'
+import type { AppType } from '../api'
 import type { Route } from './+types/home'
 
 export function meta(_args: Route.MetaArgs) {
   return [{ title: 'New React Router App' }, { name: 'description', content: 'Welcome to React Router!' }]
 }
 
+export async function loader({ context }: LoaderFunctionArgs<{ var: ContextVariableMap }>) {
+  const articles = await context?.var.repositories.articleRepository.findAll()
+  return { articles: articles?.slice(0, 1) ?? [] }
+}
+
 export default function Home() {
   const client = hc<AppType>('/api')
-  const [articles, setArticles] = useState<{ id: string; title: string }[]>([])
+  const { articles: initialArticles } = useLoaderData<typeof loader>()
+  const [articles, setArticles] = useState<{ id: string; title: string }[]>(initialArticles)
   const handleClick = useCallback(async () => {
     const response = await client.articles.$get()
     if (!response.ok) {

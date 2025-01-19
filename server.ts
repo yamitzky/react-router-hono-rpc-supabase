@@ -5,7 +5,9 @@ import { openAPISpecs } from 'hono-openapi'
 import type { AppLoadContext, RequestHandler } from 'react-router'
 import { createRequestHandler } from 'react-router'
 import { reactRouter } from 'remix-hono/handler'
-import apiRoutes from './api'
+import apiRoutes from './app/api'
+import { InMemoryArticleRepository } from './app/infrastructure/memory/inMemoryArticleRepository'
+import { createRepositoryMiddleware } from './app/middleware/repositoryMiddleware'
 
 const app = new Hono<{
   Bindings: {
@@ -14,6 +16,35 @@ const app = new Hono<{
 }>()
 
 let handler: RequestHandler | undefined
+
+const dummyArticles = [
+  {
+    id: 'article1',
+    title: 'Getting Started with TypeScript',
+    content: 'TypeScript is a powerful superset of JavaScript...',
+    authorId: 'author1',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'article2',
+    title: 'Web Development Best Practices',
+    content: 'Here are some essential web development practices...',
+    authorId: 'author1',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'article3',
+    title: 'Introduction to API Design',
+    content: 'When designing APIs, it is important to consider...',
+    authorId: 'author2',
+    createdAt: new Date().toISOString(),
+  },
+]
+const repositories = {
+  articleRepository: new InMemoryArticleRepository(dummyArticles),
+}
+const repositoryMiddleware = createRepositoryMiddleware(repositories)
+app.use(repositoryMiddleware)
 
 app.route('/api', apiRoutes)
 app.get('/hono', (c) => c.text('Hono, ' + c.env.MY_VAR))
@@ -54,10 +85,8 @@ app.use(async (c, next) => {
       // @ts-ignore
       getLoadContext(c) {
         return {
-          cloudflare: {
-            env: c.env,
-          },
-        }
+          var: c.var,
+        } satisfies AppLoadContext
       },
     })(c, next)
   } else {
@@ -67,10 +96,8 @@ app.use(async (c, next) => {
       handler = createRequestHandler(build, 'development')
     }
     const remixContext = {
-      cloudflare: {
-        env: c.env,
-      },
-    } as unknown as AppLoadContext
+      var: c.var,
+    } satisfies AppLoadContext
     return handler(c.req.raw, remixContext)
   }
 })
