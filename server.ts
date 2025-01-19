@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
-import { poweredBy } from 'hono/powered-by'
 import type { AppLoadContext, RequestHandler } from 'react-router'
 import { createRequestHandler } from 'react-router'
 import { reactRouter } from 'remix-hono/handler'
+import apiRoutes from './api'
 
 const app = new Hono<{
   Bindings: {
@@ -12,7 +12,7 @@ const app = new Hono<{
 
 let handler: RequestHandler | undefined
 
-app.use(poweredBy())
+app.route('/api', apiRoutes)
 app.get('/hono', (c) => c.text('Hono, ' + c.env.MY_VAR))
 
 app.use(async (c, next) => {
