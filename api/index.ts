@@ -1,5 +1,5 @@
-import { articleRoutes } from 'api/articles'
 import { Hono } from 'hono'
+import { articleRoutes } from './articles'
 
 const apiRoutes = new Hono().route('/articles', articleRoutes)
 

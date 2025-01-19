@@ -1,3 +1,4 @@
+import { serveStatic } from '@hono/node-server/serve-static'
 import { Hono } from 'hono'
 import type { AppLoadContext, RequestHandler } from 'react-router'
 import { createRequestHandler } from 'react-router'
@@ -15,8 +16,14 @@ let handler: RequestHandler | undefined
 app.route('/api', apiRoutes)
 app.get('/hono', (c) => c.text('Hono, ' + c.env.MY_VAR))
 
+if (import.meta.env.PROD) {
+  app.use('/assets/*', serveStatic({ root: './build/client' }))
+  app.use('/favicon.ico', serveStatic({ root: './build/client' }))
+}
+
 app.use(async (c, next) => {
   if (process.env.NODE_ENV !== 'development' || import.meta.env.PROD) {
+    // @ts-expect-error it's not typed
     const serverBuild = await import('./build/server')
     return reactRouter({
       build: serverBuild,

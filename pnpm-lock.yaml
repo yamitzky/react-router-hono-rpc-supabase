@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@hono/node-server':
+        specifier: ^1.13.7
+        version: 1.13.7(hono@4.6.17)
       '@react-router/node':
         specifier: ^7.1.3
         version: 7.1.3(react-router@7.1.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(typescript@5.7.3)
@@ -29,10 +32,13 @@ importers:
       react-router:
         specifier: ^7.1.3
         version: 7.1.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      remix-hono:
+        specifier: ^0.0.18
+        version: 0.0.18(hono@4.6.17)(pretty-cache-header@1.0.0)(react-router@7.1.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
     devDependencies:
-      '@hono/node-server':
-        specifier: ^1.13.7
-        version: 1.13.7(hono@4.6.17)
+      '@hono/vite-build':
+        specifier: ^1.2.1
+        version: 1.2.1(hono@4.6.17)
       '@hono/vite-dev-server':
         specifier: ^0.18.1
         version: 0.18.1(hono@4.6.17)
@@ -54,9 +60,6 @@ importers:
       postcss:
         specifier: ^8.4.49
         version: 8.5.1
-      remix-hono:
-        specifier: ^0.0.18
-        version: 0.0.18(hono@4.6.17)(pretty-cache-header@1.0.0)(react-router@7.1.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       tailwindcss:
         specifier: ^3.4.16
         version: 3.4.17
@@ -354,6 +357,12 @@ packages:
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: ^4
+
+  '@hono/vite-build@1.2.1':
+    resolution: {integrity: sha512-lTtfA65OZDD9InxCE6BKDjwhRwelDIFvFULZE/IkAWXm4jm08k12lkbYNCTkCRvgT3w5zAVgn2Yd4tNySe6oCw==}
+    engines: {node: '>=18.14.1'}
+    peerDependencies:
+      hono: '*'
 
   '@hono/vite-dev-server@0.18.1':
     resolution: {integrity: sha512-Hud6Vsm+5jZDYGuchOVrc/Cr+CqydLH9yBc7VY8ChI1PH0WKSxG12t/qtQs4otuPDuUhowtemCLrk3TpMONYjQ==}
@@ -1982,6 +1991,10 @@ snapshots:
     optional: true
 
   '@hono/node-server@1.13.7(hono@4.6.17)':
+    dependencies:
+      hono: 4.6.17
+
+  '@hono/vite-build@1.2.1(hono@4.6.17)':
     dependencies:
       hono: 4.6.17
 
