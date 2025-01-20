@@ -1,5 +1,7 @@
 # React Router + Hono RPC
 
+[日本語版 README](https://github.com/yamitzky/react-router-hono-rpc/blob/main/README.ja.md)
+
 This project combines React Router (Remix) with Hono.
 
 ## Technology Stack
