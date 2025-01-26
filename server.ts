@@ -1,13 +1,11 @@
 import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
-import { apiReference } from '@scalar/hono-api-reference'
 import { Hono } from 'hono'
 import { openAPISpecs } from 'hono-openapi'
 import process from 'node:process'
 import type { AppLoadContext, RequestHandler } from 'react-router'
 import { createRequestHandler } from 'react-router'
 import { reactRouter } from 'remix-hono/handler'
-import { fileURLToPath } from 'url'
 import apiRoutes from './app/api'
 import { InMemoryArticleRepository } from './app/infrastructure/memory/inMemoryArticleRepository'
 import { createRepositoryMiddleware } from './app/middleware/repositoryMiddleware'
@@ -53,6 +51,7 @@ app.route('/api', apiRoutes)
 app.get('/hono', (c) => c.text('Hono, ' + c.env.MY_VAR))
 
 if (import.meta.env.DEV) {
+  const { apiReference } = await import('@scalar/hono-api-reference')
   app.get(
     '/openapi',
     openAPISpecs(apiRoutes, {
@@ -77,12 +76,10 @@ app.use('/favicon.ico', serveStatic({ root: './build/client' }))
 
 app.use(async (c, next) => {
   if (import.meta.env.PROD) {
-    const serverBuild = await import(fileURLToPath(new URL('./server/index.js', import.meta.url)))
     return reactRouter({
-      build: serverBuild,
+      // @ts-expect-error it's not typed
+      build: await import('virtual:react-router/server-build'),
       mode: 'production',
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       getLoadContext(c) {
         return {
           var: c.var,

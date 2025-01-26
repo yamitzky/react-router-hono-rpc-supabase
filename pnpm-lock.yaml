@@ -63,9 +63,6 @@ importers:
         specifier: 1.0.0-beta.12
         version: 1.0.0-beta.12(typescript@5.7.3)
     devDependencies:
-      '@hono/vite-build':
-        specifier: ^1.2.1
-        version: 1.2.1(hono@4.6.17)
       '@hono/vite-dev-server':
         specifier: ^0.18.1
         version: 0.18.1(hono@4.6.17)
@@ -527,12 +524,6 @@ packages:
     peerDependencies:
       hono: '>=3.9.0'
       valibot: ^1.0.0 || ^1.0.0-beta.4 || ^1.0.0-rc
-
-  '@hono/vite-build@1.2.1':
-    resolution: {integrity: sha512-lTtfA65OZDD9InxCE6BKDjwhRwelDIFvFULZE/IkAWXm4jm08k12lkbYNCTkCRvgT3w5zAVgn2Yd4tNySe6oCw==}
-    engines: {node: '>=18.14.1'}
-    peerDependencies:
-      hono: '*'
 
   '@hono/vite-dev-server@0.18.1':
     resolution: {integrity: sha512-Hud6Vsm+5jZDYGuchOVrc/Cr+CqydLH9yBc7VY8ChI1PH0WKSxG12t/qtQs4otuPDuUhowtemCLrk3TpMONYjQ==}
@@ -2950,10 +2941,6 @@ snapshots:
     dependencies:
       hono: 4.6.17
       valibot: 1.0.0-beta.12(typescript@5.7.3)
-
-  '@hono/vite-build@1.2.1(hono@4.6.17)':
-    dependencies:
-      hono: 4.6.17
 
   '@hono/vite-dev-server@0.18.1(hono@4.6.17)':
     dependencies:

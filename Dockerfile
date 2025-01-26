@@ -17,7 +17,7 @@ RUN pnpm run build
 FROM deps AS prod-deps
 RUN pnpm prune --prod && pnpm install --frozen-lockfile --offline --prod
 
-FROM gcr.io/distroless/nodejs20-debian12:nonroot
+FROM gcr.io/distroless/nodejs20-debian12:debug
 ENV NODE_ENV=production
 ENV PORT=3000
 
@@ -27,4 +27,4 @@ COPY package.json ./
 
 EXPOSE 3000
 
-CMD ["build/index.js"]
+CMD ["build/server/index.js"]
