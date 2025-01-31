@@ -4,7 +4,7 @@ import type { Config } from "tailwindcss";
 export default {
   content: [
     "./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}",
-    "./node_modules/@heroui/theme/dist/components/(button|table|ripple|spinner|checkbox|form|spacer).js"
+    "./node_modules/@heroui/theme/dist/components/(button|form|input|input-otp|table|ripple|spinner|checkbox|spacer).js"
   ],
   theme: {
     extend: {

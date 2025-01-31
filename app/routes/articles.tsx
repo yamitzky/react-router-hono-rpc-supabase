@@ -1,17 +1,28 @@
 import { Button } from '@heroui/button'
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/table'
-import type { ContextVariableMap } from 'hono'
 import { hc } from 'hono/client'
 import { useCallback, useState } from 'react'
-import { type LoaderFunctionArgs, useLoaderData } from 'react-router'
+import { redirect, useLoaderData } from 'react-router'
 import type { AppType } from '../api'
+import type { Route } from './+types/articles'
 
 export function meta() {
   return [{ title: 'Articles' }, { name: 'description', content: 'Articles page' }]
 }
 
-export async function loader({ context }: LoaderFunctionArgs<{ var: ContextVariableMap }>) {
-  const articles = await context?.var.repositories.articleRepository.findAll()
+export async function loader({ context }: Route.LoaderArgs) {
+  const result = await context.var.authClient.getUser()
+  if (!result) {
+    throw new Response('Unknown error', { status: 500 })
+  }
+  if (!result || result.error) {
+    if (result.error.status === 401) {
+      return redirect('/login')
+    }
+    throw new Response(result.error.message, { status: result.error.status })
+  }
+
+  const articles = await context.var.repositories.articleRepository.findAll()
   return { articles: articles?.slice(0, 1) ?? [] }
 }
 
@@ -37,11 +48,13 @@ export default function Articles() {
         <TableHeader>
           <TableColumn>ID</TableColumn>
           <TableColumn>Title</TableColumn>
+          <TableColumn>Author</TableColumn>
         </TableHeader>
         <TableBody>
           {articles.map((article) => (
             <TableRow key={article.id}>
               <TableCell>{article.id}</TableCell>
+              <TableCell>{article.title}</TableCell>
               <TableCell>{article.title}</TableCell>
             </TableRow>
           ))}

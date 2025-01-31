@@ -1,14 +1,21 @@
 import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
-import { Hono } from 'hono'
+import { type ContextVariableMap, Hono } from 'hono'
 import { openAPISpecs } from 'hono-openapi'
 import process from 'node:process'
 import type { AppLoadContext, RequestHandler } from 'react-router'
 import { createRequestHandler } from 'react-router'
 import { reactRouter } from 'remix-hono/handler'
+import { authClientMiddleware } from '~/middleware/authMiddleware'
 import apiRoutes from './app/api'
 import { InMemoryArticleRepository } from './app/infrastructure/memory/inMemoryArticleRepository'
-import { createRepositoryMiddleware } from './app/middleware/repositoryMiddleware'
+import { repositoryMiddleware } from './app/middleware/repositoryMiddleware'
+
+declare module 'react-router' {
+  interface AppLoadContext {
+    var: ContextVariableMap
+  }
+}
 
 const app = new Hono<{
   Bindings: {
@@ -44,8 +51,9 @@ const dummyArticles = [
 const repositories = {
   articleRepository: new InMemoryArticleRepository(dummyArticles),
 }
-const repositoryMiddleware = createRepositoryMiddleware(repositories)
-app.use(repositoryMiddleware)
+app.use(repositoryMiddleware(repositories))
+
+app.use('*', authClientMiddleware)
 
 app.route('/api', apiRoutes)
 app.get('/hono', (c) => c.text('Hono, ' + c.env.MY_VAR))

@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { testClient } from 'hono/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createRepositoryMiddleware } from '../middleware/repositoryMiddleware'
+import { repositoryMiddleware } from '../middleware/repositoryMiddleware'
 import type { Article } from '../models/article'
 import type { ArticleRepository } from '../repositories/articleRepository'
 import { articleRoutes } from './articles'
@@ -18,7 +18,7 @@ const mockArticleRepository = {
 // テスト用のアプリケーションを作成
 const app = new Hono()
   .use(
-    createRepositoryMiddleware({
+    repositoryMiddleware({
       articleRepository: mockArticleRepository,
     }),
   )

@@ -11,7 +11,11 @@ declare module 'hono' {
   }
 }
 
-export const createRepositoryMiddleware = (repositories: Repositories) => {
+export const getRepositories = (c: Context) => {
+  return c.get('repositories')
+}
+
+export const repositoryMiddleware = (repositories: Repositories) => {
   return async (c: Context, next: Next) => {
     c.set('repositories', repositories)
     await next()

@@ -1,6 +1,18 @@
 import { HeroUIProvider } from '@heroui/system'
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, isRouteErrorResponse } from 'react-router'
+import {
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  isRouteErrorResponse,
+  useLoaderData,
+  useOutletContext,
+} from 'react-router'
 
+import { createBrowserClient } from '@supabase/ssr'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import { useState } from 'react'
 import type { Route } from './+types/root'
 import stylesheet from './app.css?url'
 
@@ -38,8 +50,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
   )
 }
 
+export const loader = () => {
+  const env = {
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+  }
+
+  return { env }
+}
+
+type ContextType = {
+  supabase: SupabaseClient
+}
+
 export default function App() {
-  return <Outlet />
+  const { env } = useLoaderData<typeof loader>()
+  const [supabase] = useState(() => {
+    if (!env.SUPABASE_URL || !env.SUPABASE_ANON_KEY) {
+      throw new Error('Missing environment variables')
+    }
+    return createBrowserClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
+  })
+  return <Outlet context={{ supabase } satisfies ContextType} />
+}
+
+export function useSupabase() {
+  const { supabase } = useOutletContext<ContextType>()
+  return supabase
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
