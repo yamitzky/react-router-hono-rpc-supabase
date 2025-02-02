@@ -15,13 +15,21 @@ export class InMemoryArticleRepository {
     return this.articles.get(id)
   }
 
-  async findAll(): Promise<Article[]> {
-    return Array.from(this.articles.values())
-  }
+  async findAll(params?: {
+    limit?: number
+    offset?: number
+  }): Promise<Article[]> {
+    let articles = Array.from(this.articles.values())
 
-  async findByAuthorId(authorId: string): Promise<Article[]> {
-    const articleList = Array.from(this.articles.values())
-    return articleList.filter((article) => article.authorId === authorId)
+    if (params) {
+      if (params.offset !== undefined) {
+        articles = articles.slice(params.offset)
+      }
+      if (params.limit !== undefined) {
+        articles = articles.slice(0, params.limit)
+      }
+    }
+    return Array.from(articles)
   }
 
   async create(articleData: Omit<Article, 'id'>): Promise<Article> {

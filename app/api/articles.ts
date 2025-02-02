@@ -18,7 +18,15 @@ const ArticleResponseSchema = v.object({
 })
 type ArticleResponse = v.InferOutput<typeof ArticleResponseSchema>
 
-const ArticleQuerySchema = v.optional(v.object({ authorId: v.optional(v.string()) }))
+const ArticleQuerySchema = v.optional(
+  v.object({
+    // limit: v.optional(v.number()),
+    // offset: v.optional(v.number()),
+    limit: v.optional(v.pipe(v.string(), v.transform(Number))),
+    offset: v.optional(v.pipe(v.string(), v.transform(Number))),
+    // offset: z.string().pipe(z.coerce.number().min(1).max(20)).optional(),
+  }),
+)
 
 const ArticleParamSchema = v.object({ id: v.string() })
 
@@ -75,9 +83,8 @@ export const articleRoutes = new Hono()
     async (c) => {
       const { articleRepository } = getRepositories(c)
       const query = c.req.valid('query')
-      const authorId = query?.authorId
 
-      const articles = authorId ? await articleRepository.findByAuthorId(authorId) : await articleRepository.findAll()
+      const articles = await articleRepository.findAll(query)
 
       const response = {
         articles,

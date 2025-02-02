@@ -1,9 +1,10 @@
 import { Button } from '@heroui/button'
-import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/table'
 import { hc } from 'hono/client'
-import { useCallback, useState } from 'react'
+import { Suspense, use, useCallback, useEffect, useState, useTransition } from 'react'
 import { redirect, useLoaderData } from 'react-router'
-import type { AppType } from '../api'
+import type { AppType } from '~/api'
+import { ArticleCard } from '~/components/ArticleCard'
+import type { Article } from '~/models/article'
 import type { Route } from './+types/articles'
 
 export function meta() {
@@ -22,44 +23,86 @@ export async function loader({ context }: Route.LoaderArgs) {
     throw new Response(result.error.message, { status: result.error.status })
   }
 
-  const articles = await context.var.repositories.articleRepository.findAll()
-  return { articles: articles?.slice(0, 1) ?? [] }
+  const articlesPromise = context.var.repositories.articleRepository.findAll({ limit: 1 })
+  return { articlesPromise }
 }
 
-export default function Articles() {
+async function fetchArticles(offset: number) {
   const client = hc<AppType>('/api')
-  const { articles: initialArticles } = useLoaderData<typeof loader>()
-  const [articles, setArticles] = useState<{ id: string; title: string }[]>(initialArticles)
-  const handleClick = useCallback(async () => {
-    const response = await client.articles.$get()
-    if (!response.ok) {
-      alert(response.statusText)
-    } else {
-      const data = await response.json()
-      setArticles(data.articles)
-    }
+  const response = await client.articles.$get({ query: { offset: String(offset) } })
+  if (!response.ok) {
+    throw new Error(await response.text())
+  } else {
+    const data = await response.json()
+    return data.articles
+  }
+}
+
+export default function ArticlesRoute() {
+  const { articlesPromise: initialArticlesPromise } = useLoaderData<typeof loader>()
+  const [pages, setPages] = useState<{ promise: Promise<Article[]>; offset: number; count?: number }[]>([
+    {
+      promise: initialArticlesPromise,
+      offset: 0,
+    },
+  ])
+  const [isLoading, startTransition] = useTransition()
+
+  const handleLoadMore = useCallback(() => {
+    startTransition(() => {
+      setPages((prev) => {
+        const lastPage = prev[prev.length - 1]
+        if (lastPage?.count == null) {
+          return prev
+        }
+        return [
+          ...prev,
+          {
+            offset: lastPage.offset + lastPage.count,
+            promise: fetchArticles(lastPage.offset + lastPage.count),
+          },
+        ]
+      })
+    })
   }, [])
+
+  const handleOnLoad = useCallback((page: number, count: number) => {
+    setPages((prev) => {
+      prev[page] = { ...prev[page], count }
+      return prev
+    })
+  }, [])
+
   return (
-    <div className="p-4">
-      <div className="mb-4">
-        <Button onPress={handleClick}>Fetch Articles</Button>
+    <div className="p-8 min-h-screen">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {pages.map(({ promise }, page) => (
+          <Suspense fallback={page === 0 ? <ArticleCard /> : undefined} key={page}>
+            <ArticlesPage onLoad={(count) => handleOnLoad(page, count)} articlesPromise={promise} />
+          </Suspense>
+        ))}
+        <Button isLoading={isLoading} onPress={handleLoadMore} className="font-medium px-6">
+          {isLoading ? 'Loading...' : 'Load more'}
+        </Button>
       </div>
-      <Table aria-label="Articles List">
-        <TableHeader>
-          <TableColumn>ID</TableColumn>
-          <TableColumn>Title</TableColumn>
-          <TableColumn>Author</TableColumn>
-        </TableHeader>
-        <TableBody>
-          {articles.map((article) => (
-            <TableRow key={article.id}>
-              <TableCell>{article.id}</TableCell>
-              <TableCell>{article.title}</TableCell>
-              <TableCell>{article.title}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
     </div>
+  )
+}
+
+function ArticlesPage({
+  articlesPromise,
+  onLoad,
+}: { articlesPromise: Promise<Article[]>; onLoad: (count: number) => void }) {
+  const articles = use(articlesPromise)
+  useEffect(() => {
+    onLoad(articles.length)
+  }, [articles])
+
+  return (
+    <>
+      {articles.map((article) => (
+        <ArticleCard key={article.id} article={article} />
+      ))}
+    </>
   )
 }
