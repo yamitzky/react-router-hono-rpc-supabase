@@ -12,6 +12,7 @@
   "dependencies": {
     "@heroui/button": "^2.2.10",
     "@heroui/card": "^2.2.10",
+    "@heroui/checkbox": "^2.3.9",
     "@heroui/chip": "^2.2.7",
     "@heroui/form": "^2.1.9",
     "@heroui/input": "^2.4.10",
