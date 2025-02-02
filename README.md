@@ -1,7 +1,5 @@
 # React Router + Hono RPC
 
-[日本語版 README](https://github.com/yamitzky/react-router-hono-rpc/blob/main/README.ja.md)
-
 This project combines React Router (Remix) with Hono.
 
 ## Technology Stack
@@ -15,6 +13,7 @@ This project combines React Router (Remix) with Hono.
 - Integration of Hono and React Router using [hono-remix](https://github.com/sergiodxa/remix-hono)
 - Deployment on Node environment
 - Dependency injection for API and Remix using [Hono Context](https://hono.dev/docs/api/context#var)
+- Authentication with Supabase (implemented in Hono, React Router loaders, and JavaScript)
 
 ## Commands
 
