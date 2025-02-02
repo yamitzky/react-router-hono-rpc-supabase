@@ -64,7 +64,40 @@ if (import.meta.env.DEV) {
     '/openapi',
     openAPISpecs(apiRoutes, {
       documentation: {
-        info: { title: 'API', version: '1.0.0', description: 'API' },
+        info: {
+          title: 'API',
+          version: '1.0.0',
+          description: `# Python Instruction
+
+\`\`\`python
+import os
+import requests
+from supabase import create_client
+
+url = os.environ["SUPABASE_URL"]
+key = os.environ["SUPABASE_ANON_KEY"]
+supabase = supabase.create_client(url, key)
+
+# Email Sign In with OTP
+supabase.auth.sign_in_with_otp({
+    "email": "your-email-address@example.com",
+    "options": {
+      "should_create_user": False,
+    },
+})
+auth = supabase.auth.verify_otp({
+    "email": "your-email-address@example.com",
+    "token": "123456",  # OTP code you received
+    "type": "email"
+})
+
+auth_header = f"Bearer {auth.session.access_token}"
+response = requests.get("http://localhost:5173/api/articles", headers={"Authorization": auth_header})
+print(response.json())
+\`\`\`
+          
+          `,
+        },
         servers: [{ url: 'http://localhost:5173/api', description: 'Local Server' }],
       },
     }),

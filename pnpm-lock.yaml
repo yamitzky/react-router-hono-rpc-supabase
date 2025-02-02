@@ -63,8 +63,8 @@ importers:
         specifier: ^4.6.17
         version: 4.6.17
       hono-openapi:
-        specifier: ^0.4.1
-        version: 0.4.1(@hono/valibot-validator@0.5.2(hono@4.6.17)(valibot@1.0.0-beta.12(typescript@5.7.3)))(@valibot/to-json-schema@1.0.0-beta.4(valibot@1.0.0-beta.12(typescript@5.7.3)))(hono@4.6.17)(valibot@1.0.0-beta.12(typescript@5.7.3))
+        specifier: ^0.4.4
+        version: 0.4.4(@hono/valibot-validator@0.5.2(hono@4.6.17)(valibot@1.0.0-beta.12(typescript@5.7.3)))(@valibot/to-json-schema@1.0.0-beta.4(valibot@1.0.0-beta.12(typescript@5.7.3)))(hono@4.6.17)(valibot@1.0.0-beta.12(typescript@5.7.3))
       isbot:
         specifier: ^5.1.17
         version: 5.1.21
@@ -1515,8 +1515,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hono-openapi@0.4.1:
-    resolution: {integrity: sha512-GkE3xJ3PsOJG8i7oYKpMVppXGN4Yg6FL5/zSejSssTQOkiVLwuxWEgT+jOPhhzhHwziUdWpTKNRWc0Xm9UWRYQ==}
+  hono-openapi@0.4.4:
+    resolution: {integrity: sha512-8UdlOwqGuKwtmGgiUcxRarIi0XOY9ZED+XfpVaZr9un5jl9p9dTLrnIhs1i+eTqvHNHV4QNF0C5bbfxdMBYe+w==}
     peerDependencies:
       '@hono/arktype-validator': ^2.0.0
       '@hono/effect-validator': ^1.2.0
@@ -4151,7 +4151,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono-openapi@0.4.1(@hono/valibot-validator@0.5.2(hono@4.6.17)(valibot@1.0.0-beta.12(typescript@5.7.3)))(@valibot/to-json-schema@1.0.0-beta.4(valibot@1.0.0-beta.12(typescript@5.7.3)))(hono@4.6.17)(valibot@1.0.0-beta.12(typescript@5.7.3)):
+  hono-openapi@0.4.4(@hono/valibot-validator@0.5.2(hono@4.6.17)(valibot@1.0.0-beta.12(typescript@5.7.3)))(@valibot/to-json-schema@1.0.0-beta.4(valibot@1.0.0-beta.12(typescript@5.7.3)))(hono@4.6.17)(valibot@1.0.0-beta.12(typescript@5.7.3)):
     dependencies:
       json-schema-walker: 2.0.0
     optionalDependencies:

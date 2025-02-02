@@ -20,11 +20,9 @@ type ArticleResponse = v.InferOutput<typeof ArticleResponseSchema>
 
 const ArticleQuerySchema = v.optional(
   v.object({
-    // limit: v.optional(v.number()),
-    // offset: v.optional(v.number()),
-    limit: v.optional(v.pipe(v.string(), v.transform(Number))),
-    offset: v.optional(v.pipe(v.string(), v.transform(Number))),
-    // offset: z.string().pipe(z.coerce.number().min(1).max(20)).optional(),
+    // FIXME: Cannot use transform with valibot/json-schema constraints
+    limit: v.optional(v.pipe(v.string(), v.digits())),
+    offset: v.optional(v.pipe(v.string(), v.digits())),
   }),
 )
 
@@ -84,7 +82,11 @@ export const articleRoutes = new Hono()
       const { articleRepository } = getRepositories(c)
       const query = c.req.valid('query')
 
-      const articles = await articleRepository.findAll(query)
+      // FIXME: Cannot use transform with valibot/json-schema constraints
+      const articles = await articleRepository.findAll({
+        limit: query?.limit == null ? undefined : Number(query.limit),
+        offset: query?.offset == null ? undefined : Number(query.offset),
+      })
 
       const response = {
         articles,
