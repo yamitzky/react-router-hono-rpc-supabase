@@ -14,6 +14,7 @@ React Router(Remix) と Hono を組み合わせたプロジェクトです。
 - Node 環境でのデプロイ
 - [Hono Context](https://hono.dev/docs/api/context#var) での API、Remix への依存注入
 - Supabase での認証 (Hono、React Routerのloader、JavaScript)
+- Supabase でのデータベースへのCRUD (Hono)
 
 ## コマンド
 
