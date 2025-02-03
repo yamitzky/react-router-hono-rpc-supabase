@@ -6,7 +6,7 @@ import { authorized } from '~/middleware/authMiddleware'
 import { getRepositories } from '~/middleware/repositoryMiddleware'
 import { ArticleSchema } from '../models/article'
 
-const ArticleWithoutIdSchema = v.omit(ArticleSchema, ['id'])
+const InputArticleSchema = v.omit(ArticleSchema, ['id', 'authorId', 'createdAt'])
 
 const ArticlesResponseSchema = v.object({
   articles: v.array(ArticleSchema),
@@ -109,11 +109,12 @@ export const articleRoutes = new Hono()
         },
       },
     }),
-    vValidator('json', ArticleWithoutIdSchema),
+    vValidator('json', InputArticleSchema),
     async (c) => {
       const { articleRepository } = getRepositories(c)
+
       const data = c.req.valid('json')
-      const article = await articleRepository.create(data)
+      const article = await articleRepository.create({ ...data, authorId: c.var.user.id })
 
       const response = { article } satisfies ArticleResponse
       return c.json(response)
@@ -138,7 +139,7 @@ export const articleRoutes = new Hono()
       },
     }),
     vValidator('param', ArticleParamSchema),
-    vValidator('json', v.partial(ArticleWithoutIdSchema)),
+    vValidator('json', v.partial(InputArticleSchema)),
     async (c) => {
       const { articleRepository } = getRepositories(c)
       const id = c.req.valid('param').id

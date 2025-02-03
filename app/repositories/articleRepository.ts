@@ -6,7 +6,7 @@ export interface ArticleRepository {
     limit?: number
     offset?: number
   }): Promise<Article[]>
-  create(article: Omit<Article, 'id'>): Promise<Article>
+  create(article: Omit<Article, 'id' | 'createdAt'>): Promise<Article>
   update(id: string, article: Partial<Article>): Promise<Article>
   delete(id: string): Promise<void>
 }

@@ -18,6 +18,7 @@
     "@heroui/form": "^2.1.9",
     "@heroui/input": "^2.4.10",
     "@heroui/input-otp": "^2.1.9",
+    "@heroui/select": "^2.4.10",
     "@heroui/skeleton": "^2.2.6",
     "@heroui/system": "^2.4.7",
     "@heroui/theme": "^2.4.6",
