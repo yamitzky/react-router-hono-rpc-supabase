@@ -15,6 +15,7 @@ This project combines React Router (Remix) with Hono.
 - Dependency injection for API and Remix using [Hono Context](https://hono.dev/docs/api/context#var)
 - Authentication with Supabase (implemented in Hono, React Router loaders, and JavaScript)
 - CRUD operations on Supabase database (implemented in Hono)
+- React Suspense
 
 ## Commands
 
