@@ -15,9 +15,9 @@ export const getRepositories = (c: Context) => {
   return c.get('repositories')
 }
 
-export const repositoryMiddleware = (repositories: Repositories) => {
+export const repositoryMiddleware = (createRepositories: (context: Context) => Repositories) => {
   return async (c: Context, next: Next) => {
-    c.set('repositories', repositories)
+    c.set('repositories', createRepositories(c))
     await next()
   }
 }

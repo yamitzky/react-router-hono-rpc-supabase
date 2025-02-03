@@ -7,7 +7,8 @@
     "dev": "react-router dev",
     "start": "node ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
-    "test": "vitest"
+    "test": "vitest",
+    "gen-types": "supabase gen types"
   },
   "dependencies": {
     "@heroui/button": "^2.2.10",
@@ -46,6 +47,7 @@
     "@types/react-dom": "^19.0.1",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
+    "supabase": "^2.9.6",
     "tailwindcss": "^3.4.16",
     "typescript": "^5.7.2",
     "vite": "^5.4.11",

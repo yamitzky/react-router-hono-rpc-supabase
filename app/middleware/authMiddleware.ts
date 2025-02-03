@@ -1,13 +1,9 @@
-import { createServerClient, parseCookieHeader } from '@supabase/ssr'
-import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Context } from 'hono'
-import { env } from 'hono/adapter'
-import { setCookie } from 'hono/cookie'
+import type { Context, Next } from 'hono'
 import { createMiddleware } from 'hono/factory'
 import { HTTPException } from 'hono/http-exception'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 
-type AuthError = {
+export type AuthError = {
   message: string
   status?: ContentfulStatusCode
 }
@@ -42,74 +38,9 @@ export const authorized = createMiddleware(async (c, next) => {
   await next()
 })
 
-// FIXME: It's better to separate `authMiddleware` and the specific implementation of Supabase.
-type SupabaseEnv = {
-  SUPABASE_URL: string
-  SUPABASE_ANON_KEY: string
-}
-class SupabaseAuth implements AuthClient {
-  supabase: SupabaseClient
-  jwt?: string
-
-  constructor(supabase: SupabaseClient, jwt?: string) {
-    this.supabase = supabase
-    this.jwt = jwt
-  }
-
-  async getUser() {
-    if (!this.jwt) {
-      const sessionResult = await this.supabase.auth.getSession()
-      if (sessionResult.error) {
-        return { user: null, error: sessionResult.error as AuthError }
-      }
-      if (!sessionResult.data.session) {
-        return { user: null, error: { message: 'Unauthorized', status: 401 as const } }
-      }
-    }
-
-    const { data, error } = await this.supabase.auth.getUser(this.jwt)
-    if (error) {
-      console.log(error)
-      return { user: null, error: error as AuthError }
-    }
-    return { user: data.user, error: null }
-  }
-}
-
-export const authClientMiddleware = createMiddleware(async (c, next) => {
-  const supabaseEnv = env<SupabaseEnv>(c)
-  const supabaseUrl = supabaseEnv.SUPABASE_URL
-  const supabaseAnonKey = supabaseEnv.SUPABASE_ANON_KEY
-
-  if (!supabaseUrl) {
-    throw new Error('SUPABASE_URL missing!')
-  }
-
-  if (!supabaseAnonKey) {
-    throw new Error('SUPABASE_ANON_KEY missing!')
-  }
-
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll() {
-        return parseCookieHeader(c.req.header('Cookie') ?? '')
-      },
-      setAll(cookiesToSet) {
-        // @ts-expect-error Copied official sample, but the types of cookie are slightly mismatched.
-        cookiesToSet.forEach(({ name, value, options }) => setCookie(c, name, value, options))
-      },
-    },
-  })
-
-  const jwt = parseBearerToken(c.req.header('Authorization') ?? '')
-  c.set('authClient', new SupabaseAuth(supabase, jwt))
-
-  await next()
-})
-
-function parseBearerToken(token: string) {
-  const parts = token.split(' ')
-  if (parts.length === 2 && parts[0] === 'Bearer') {
-    return parts[1]
+export const authMiddleware = (createAuth: (context: Context) => AuthClient) => {
+  return async (c: Context, next: Next) => {
+    c.set('authClient', createAuth(c))
+    await next()
   }
 }

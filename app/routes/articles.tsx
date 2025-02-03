@@ -29,7 +29,7 @@ export async function loader({ context }: Route.LoaderArgs) {
 
 async function fetchArticles(offset: number) {
   const client = hc<AppType>('/api')
-  const response = await client.articles.$get({ query: { offset: String(offset) } })
+  const response = await client.articles.$get({ query: { offset: String(offset), limit: '1' } })
   if (!response.ok) {
     throw new Error(await response.text())
   } else {

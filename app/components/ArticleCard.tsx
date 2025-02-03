@@ -16,10 +16,10 @@ export function ArticleCard({ article }: { article?: Article }) {
       </CardHeader>
       <CardBody className="px-6 py-4">
         <Skeleton isLoaded={isLoaded}>
-          <h4 className="text-xl font-semibold mb-2">{article?.title ?? 'loading'}</h4>
+          <h4 className="text-xl font-semibold mb-2">{article?.title ?? '...'}</h4>
         </Skeleton>
         <Skeleton isLoaded={isLoaded}>
-          <p className="text-sm leading-relaxed">{article?.content ?? 'loading'}</p>
+          <p className="text-sm leading-relaxed">{article == null ? '...' : article.content}</p>
         </Skeleton>
       </CardBody>
     </Card>

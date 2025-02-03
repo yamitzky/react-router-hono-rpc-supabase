@@ -6,9 +6,10 @@ import process from 'node:process'
 import type { AppLoadContext, RequestHandler } from 'react-router'
 import { createRequestHandler } from 'react-router'
 import { reactRouter } from 'remix-hono/handler'
-import { authClientMiddleware } from '~/middleware/authMiddleware'
+import { SupabaseArticleRepository } from '~/infrastructure/supabase/supabaseArticleRepository'
+import { SupabaseAuth } from '~/infrastructure/supabase/supabaseAuth'
+import { authMiddleware } from '~/middleware/authMiddleware'
 import apiRoutes from './app/api'
-import { InMemoryArticleRepository } from './app/infrastructure/memory/inMemoryArticleRepository'
 import { repositoryMiddleware } from './app/middleware/repositoryMiddleware'
 
 declare module 'react-router' {
@@ -25,35 +26,36 @@ const app = new Hono<{
 
 let handler: RequestHandler | undefined
 
-const dummyArticles = [
-  {
-    id: 'article1',
-    title: 'Getting Started with TypeScript',
-    content: 'TypeScript is a powerful superset of JavaScript...',
-    authorId: 'author1',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'article2',
-    title: 'Web Development Best Practices',
-    content: 'Here are some essential web development practices...',
-    authorId: 'author1',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'article3',
-    title: 'Introduction to API Design',
-    content: 'When designing APIs, it is important to consider...',
-    authorId: 'author2',
-    createdAt: new Date().toISOString(),
-  },
-]
-const repositories = {
-  articleRepository: new InMemoryArticleRepository(dummyArticles),
-}
-app.use(repositoryMiddleware(repositories))
-
-app.use('*', authClientMiddleware)
+// const dummyArticles = [
+//   {
+//     id: 'article1',
+//     title: 'Getting Started with TypeScript',
+//     content: 'TypeScript is a powerful superset of JavaScript...',
+//     authorId: 'author1',
+//     createdAt: new Date().toISOString(),
+//   },
+//   {
+//     id: 'article2',
+//     title: 'Web Development Best Practices',
+//     content: 'Here are some essential web development practices...',
+//     authorId: 'author1',
+//     createdAt: new Date().toISOString(),
+//   },
+//   {
+//     id: 'article3',
+//     title: 'Introduction to API Design',
+//     content: 'When designing APIs, it is important to consider...',
+//     authorId: 'author2',
+//     createdAt: new Date().toISOString(),
+//   },
+// ]
+// const articleRepository = new InMemoryArticleRepository(dummyArticles)
+app.use(
+  repositoryMiddleware((c) => ({
+    articleRepository: SupabaseArticleRepository.fromContext(c),
+  })),
+)
+app.use(authMiddleware(SupabaseAuth.fromContext))
 
 app.route('/api', apiRoutes)
 app.get('/hono', (c) => c.text('Hono, ' + c.env.MY_VAR))
